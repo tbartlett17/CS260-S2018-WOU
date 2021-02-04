@@ -1,0 +1,4 @@
+#ifndef DLLISTITERATOR_H
+#define DLLISTITERATOR_H
+
+#endif // DLLISTITERATOR_H

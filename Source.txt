@@ -1,0 +1,185 @@
+//********************************************************************************************
+// Author: Tyler Bartlett
+// Files: CS260_Lab1.cpp
+// Date: 04/09/18
+// Course: CS260
+// Class time: 10am, M/W
+// Lab: 1
+// Desc:  
+//		
+//********************************************************************************************
+#include <stdio.h> 
+#include <stdlib.h>
+#include <time.h>
+
+#define BUBBLE 1
+#define SELECTION 2
+#define INSERTION 3
+#define MAX_RUNS 10
+
+void swapper(int* elem1, int * elem2)
+{
+	int temp = *elem1;
+	*elem1 = *elem2;
+	*elem2 = temp;
+}
+
+void bubbleSort(int arrSize, int* arrayPtr, int* numComps) //sorting in descending order (bubble up)
+{
+	for (int i = 0; i < arrSize; i++)
+	{
+		for (int j = 0; j < arrSize - i; j++) //size-i for early exit possibility
+		{
+			*numComps++;
+			if (arrayPtr[j] < arrayPtr[j + 1])
+			{
+				swapper(&arrayPtr[j], &arrayPtr[j + 1]);
+			}
+		}
+	}
+}
+
+void selectionSort(int arrSize, int* arrayPtr, int* numComps) //sorted in ascending order
+{
+	int IndexOfSmallest;
+	for (int i = 0; i < arrSize; i++)
+	{
+		IndexOfSmallest = i;
+		for (int j = i; j < arrSize; j++)
+		{
+			*numComps++;
+			if (arrayPtr[j] < arrayPtr[IndexOfSmallest])
+			{
+				IndexOfSmallest = j;
+			}
+		}
+		swapper(&arrayPtr[IndexOfSmallest], &arrayPtr[i]);
+	}
+}
+
+void insertionSort(int arrSize, int* arrayPtr, int* numComps) //sorted in ascending order
+{
+	int j;
+	for (int i = 1; i <= arrSize - 1; i++)
+	{
+		j = i;
+		*numComps++;
+		while (j > 0 && arrayPtr[j] < arrayPtr[j - 1])
+		{
+			swapper(&arrayPtr[j], &arrayPtr[j - 1]);
+			j--;
+		}
+	}
+}
+
+void randomizeArray(int arrSize, int* arrayPtr)
+{
+	for (int i = 0; i < arrSize; i++)
+	{
+		arrayPtr[i] = (rand()*rand()) % 99999;
+	}
+}
+
+void printArr(int arrSize, float* arrayPtr)
+{
+	for (int i = 0; i < arrSize; i++)
+	{
+		printf("arr[%d]: %d\n", i, arrayPtr[i]);
+	}
+	printf("\n");
+}
+
+
+void playGround(int arrSize, float* timeArr, int* comparisonsArr, int algo)
+{
+	srand(time(NULL));
+	clock_t start, end;
+	float algoRunTime;
+
+	int* theArr = (int*)malloc(arrSize * sizeof(int));
+	int numComparisons = 0;
+	int* ptrToNumComparisons = &numComparisons;
+
+	switch (algo) {
+	case 1:
+		for (int i = 0; i < MAX_RUNS; i++)
+		{
+			randomizeArray(arrSize, theArr);
+			printArr(arrSize, (float*)theArr);
+			start = clock();
+			bubbleSort(arrSize, theArr, ptrToNumComparisons);
+			end = clock();
+			timeArr[i] = (float)(end - start) / CLOCKS_PER_SEC;
+			printArr(arrSize, (float*)theArr);
+			printf("comparisons: %d\n", ptrToNumComparisons);
+			comparisonsArr[i] = i;
+		}
+		break;
+
+	case 2:
+
+		break;
+	case 3:
+
+		break;
+
+	default:
+		printf("unknown algorithm selected. exiting program...");
+	}
+}
+
+int main()
+{
+	/* JUST SOME SETUP */
+	float* timeTracker = (float*)malloc(10 * sizeof(float));
+	int* comparisonTracker = (int*)malloc(10 * sizeof(int));
+
+	FILE* fp;
+	if (!(fp = fopen("timeRecordings.csv", "w")))
+	{
+		printf(" can not open file\n");//prind and exit if file open error
+		exit(-1);
+	}
+
+	int* theArr = (int*)malloc(1000 * sizeof(int));
+	randomizeArray(1000, theArr);
+	printArr(1000, (float*)theArr);
+
+
+	/* BEGIN PLAYING */
+	//playGround(1000, timeTracker, comparisonTracker, BUBBLE);
+	//printArr(10, (float*)comparisonTracker);
+
+	/*
+	randomizeArray(ptrToArr);
+	printArr(ptrToArr);
+	selectionSort(ptrToArr);
+	printArr(ptrToArr);
+
+	randomizeArray(ptrToArr);
+	printArr(ptrToArr);
+	insertionSort(ptrToArr);
+	printArr(ptrToArr);
+	*/
+
+
+	//.csv files (excel). commas seperate tabs and \n seperates rows
+
+	fprintf(fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\n", "Run", "arrSize: 10000", " ",
+		"arrSize: 20000", " ", "arrSize: 30000", " ", "arrSize: 40000", " ", "arrSize: 50000", " ",
+		"arrSize: 60000", " ", "arrSize: 70000", " ", "arrSize: 80000", " ", "arrSize: 90000", " ",
+		"arrSize: 100000");
+	fprintf(fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,\n", " ",
+		"Bubble Sort", " ", "Bubble Sort", " ", "Bubble Sort", " ", "Bubble Sort", " ",
+		"Bubble Sort", " ", "Bubble Sort", " ", "Bubble Sort", " ", "Bubble Sort", " ",
+		"Bubble Sort", " ", "Bubble Sort");
+	fprintf(fp, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", " ",
+		"RunTime", "Comparisons", "RunTime", "Comparisons", "RunTime", "Comparisons",
+		"RunTime", "Comparisons", "RunTime", "Comparisons", "RunTime", "Comparisons",
+		"RunTime", "Comparisons", "RunTime", "Comparisons", "RunTime", "Comparisons",
+		"RunTime", "Comparisons");
+
+	fclose(fp);
+	system("pause");
+	return 0;
+}
